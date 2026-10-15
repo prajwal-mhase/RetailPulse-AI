@@ -18,8 +18,6 @@ An AI-powered retail analytics platform that combines machine learning, demand f
 - [Explainable AI](#explainable-ai)
 - [Getting Started](#getting-started)
 - [Running the Application](#running-the-application)
-- [Testing](#testing)
-- [API Documentation](#api-documentation)
 - [Project Structure](#project-structure)
 
 ---
@@ -222,24 +220,6 @@ The following results are reported in the project documentation and have not bee
 | XGBoost | 3.3267 | 3.9726 | 57.79% |
 | Random Forest | 3.3594 | Not reported | 58.36% |
 
-### Evaluation Metrics
-
-**Mean Absolute Error (MAE)**
-
-Measures the average absolute difference between actual and predicted demand.
-
-**Root Mean Squared Error (RMSE)**
-
-Measures prediction error while penalizing larger errors more heavily.
-
-**Weighted Absolute Percentage Error (WAPE)**
-
-Measures total absolute prediction error relative to total actual demand.
-
-**Forecast Bias**
-
-Measures whether predictions systematically overestimate or underestimate actual demand.
-
 ---
 
 ## Inventory Optimization
@@ -338,8 +318,6 @@ python -m pip install -r requirements.txt
 
 The `requirements.txt` file contains the project's Python dependency specifications.
 
-### 4. Verify Dependencies
-
 ---
 
 ## Running the Application
@@ -393,3 +371,5 @@ RetailPulse AI demonstrates an end-to-end approach to retail demand forecasting 
 The platform aims to transform historical retail sales data into actionable insights while making model assumptions, evaluation results, and limitations transparent.
 
 **Built with Python, machine learning, FastAPI, and data visualization.**
+
+---
