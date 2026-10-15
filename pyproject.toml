@@ -1,10 +1,17 @@
-
 [project]
 name = "retailpulse-ai"
 version = "1.0.0"
-description = "AI-powered retail demand forecasting and inventory optimization platform"
+description = "AI-powered retail demand forecasting and inventory optimization"
 requires-python = ">=3.12"
-dependencies = []
-
+dependencies = [
+    "fastapi>=0.110.0",
+    "uvicorn>=0.29.0",
+    "pandas>=2.0.0",
+    "numpy>=1.24.0",
+    "scikit-learn>=1.3.0",
+    "pydantic>=2.0.0",
+    "python-dotenv>=1.0.0",
+]
+ 
 [tool.vercel]
 entrypoint = "api:app"
