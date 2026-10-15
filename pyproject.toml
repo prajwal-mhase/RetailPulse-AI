@@ -10,7 +10,7 @@ dependencies = [
     "pandas",
     "numpy",
     "scikit-learn",
-    "xgboost",
+    "xgboost-cpu",
     "joblib",
     "pydantic",
     "python-dotenv",
