@@ -1,0 +1,16 @@
+__pycache__
+*.pyc
+*.pyo
+*.pyd
+.pytest_cache
+.mypy_cache
+.ruff_cache
+.git
+.gitignore
+.env
+tests/
+eda_output/
+eda.py
+train.py
+store_sales_data.csv
+*.md

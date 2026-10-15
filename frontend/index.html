@@ -1,0 +1,690 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>RetailPulse AI — Demand Forecasting & Inventory Management</title>
+  <meta name="description" content="Enterprise retail demand planning, dynamic sales forecasting, safety stock optimization, and replenishment analytics for retail operations." />
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet" />
+  <!-- Chart.js for high-performance responsive charts -->
+  <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.3/dist/chart.umd.min.js"></script>
+  <link rel="stylesheet" href="/static/style.css" />
+</head>
+<body>
+
+  <!-- ── Sidebar Navigation ────────────────────────────────────── -->
+  <aside class="sidebar" id="sidebar">
+    <div class="sidebar-brand">
+      <div class="brand-logo-wrap">
+        <span class="brand-icon">📦</span>
+      </div>
+      <div class="brand-info">
+        <span class="brand-name">RetailPulse</span>
+        <span class="brand-tagline">Demand & Inventory</span>
+      </div>
+    </div>
+
+    <nav class="sidebar-nav">
+      <a href="#overview" class="nav-item active" data-tab="overview" id="nav-overview">
+        <span class="nav-icon">📊</span>
+        <span class="nav-label">Overview</span>
+      </a>
+      <a href="#forecast" class="nav-item" data-tab="forecast" id="nav-forecast">
+        <span class="nav-icon">📈</span>
+        <span class="nav-label">Demand Forecasting</span>
+      </a>
+      <a href="#inventory" class="nav-item" data-tab="inventory" id="nav-inventory">
+        <span class="nav-icon">⚡</span>
+        <span class="nav-label">Inventory Optimization</span>
+      </a>
+      <a href="#sales" class="nav-item" data-tab="sales" id="nav-sales">
+        <span class="nav-icon">💼</span>
+        <span class="nav-label">Sales Analysis</span>
+      </a>
+      <a href="#products" class="nav-item" data-tab="products" id="nav-products">
+        <span class="nav-icon">🏷️</span>
+        <span class="nav-label">Products</span>
+      </a>
+      <a href="#alerts" class="nav-item" data-tab="alerts" id="nav-alerts">
+        <span class="nav-icon">🔔</span>
+        <span class="nav-label">Alerts & Actions</span>
+        <span class="nav-badge" id="alerts-badge">0</span>
+      </a>
+    </nav>
+
+    <!-- Quick Item Selector Widget -->
+    <div class="sidebar-quickselect">
+      <div class="quickselect-header">Active Product Focus</div>
+      <div class="quickselect-body">
+        <label for="side-cat-select" class="sidebar-field-label">Category</label>
+        <select id="side-cat-select" class="sidebar-select">
+          <option value="All">All Categories</option>
+        </select>
+
+        <label for="side-subcat-select" class="sidebar-field-label">Sub-Category</label>
+        <select id="side-subcat-select" class="sidebar-select">
+          <option>Loading...</option>
+        </select>
+      </div>
+    </div>
+
+    <!-- Operational System Status -->
+    <div class="sidebar-footer">
+      <div class="system-status-indicator">
+        <span class="status-indicator-dot online"></span>
+        <span class="status-indicator-text">Live Operations Online</span>
+      </div>
+      <div class="system-meta-text">Data: India Retail Sales (2023–2025)</div>
+    </div>
+  </aside>
+
+  <!-- ── Main App Content ──────────────────────────────────────── -->
+  <main class="main-content">
+
+    <!-- Top Executive Header -->
+    <header class="app-header">
+      <div class="header-titles">
+        <h1 id="page-title">Executive Demand & Sales Overview</h1>
+        <p id="page-subtitle">Real-time KPIs, consumer demand trajectory, and inventory health across 5 retail categories</p>
+      </div>
+      <div class="header-actions">
+        <span class="data-tag" id="data-period-badge">Period: 2023–2025</span>
+        <button class="btn-refresh" id="btn-refresh" title="Refresh metrics">
+          <span class="refresh-icon">🔄</span> Refresh
+        </button>
+        <button class="btn-theme-toggle" id="btn-theme-toggle" title="Toggle Light/Dark Theme">
+          <span class="theme-icon" id="theme-icon">☀️</span> <span class="theme-text" id="theme-text">Light</span>
+        </button>
+      </div>
+    </header>
+
+    <!-- Content Sections Container -->
+    <div class="content-container">
+
+      <!-- ══════════════════════════════════════════════════════════ -->
+      <!-- TAB 1: OVERVIEW                                            -->
+      <!-- ══════════════════════════════════════════════════════════ -->
+      <section class="tab-pane active" id="tab-overview">
+        
+        <!-- KPI Cards Row -->
+        <div class="kpi-grid">
+          <div class="kpi-card" id="card-revenue">
+            <div class="kpi-icon-wrap rev">₹</div>
+            <div class="kpi-details">
+              <span class="kpi-label">Total Revenue</span>
+              <span class="kpi-value" id="kpi-revenue">₹0</span>
+              <span class="kpi-subtext" id="kpi-orders-count">9,994 Orders</span>
+            </div>
+          </div>
+
+          <div class="kpi-card" id="card-volume">
+            <div class="kpi-icon-wrap vol">📦</div>
+            <div class="kpi-details">
+              <span class="kpi-label">Total Units Sold</span>
+              <span class="kpi-value" id="kpi-units">0</span>
+              <span class="kpi-subtext" id="kpi-units-per-order">~2.1 units / order</span>
+            </div>
+          </div>
+
+          <div class="kpi-card" id="card-aov">
+            <div class="kpi-icon-wrap aov">🛒</div>
+            <div class="kpi-details">
+              <span class="kpi-label">Average Order Value</span>
+              <span class="kpi-value" id="kpi-aov">₹0</span>
+              <span class="kpi-subtext">Across All Sales Channels</span>
+            </div>
+          </div>
+
+          <div class="kpi-card" id="card-skus">
+            <div class="kpi-icon-wrap skus">🏷️</div>
+            <div class="kpi-details">
+              <span class="kpi-label">Active Catalog SKUs</span>
+              <span class="kpi-value" id="kpi-skus">74</span>
+              <span class="kpi-subtext">Across 20 Sub-Categories</span>
+            </div>
+          </div>
+
+          <div class="kpi-card" id="card-returns">
+            <div class="kpi-icon-wrap ret">↩️</div>
+            <div class="kpi-details">
+              <span class="kpi-label">Return Rate</span>
+              <span class="kpi-value" id="kpi-return-rate">0.0%</span>
+              <span class="kpi-subtext">535 Verified Return Claims</span>
+            </div>
+          </div>
+        </div>
+
+        <!-- Charts Grid Row -->
+        <div class="dashboard-grid-2">
+          <!-- Monthly Trend Chart -->
+          <div class="glass-card">
+            <div class="card-header-flex">
+              <div>
+                <h3 class="card-title">Retail Demand & Revenue Trend</h3>
+                <p class="card-desc">Monthly transaction volume and gross retail sales (2023–2025)</p>
+              </div>
+              <div class="chart-legend-custom">
+                <span class="legend-dot sales"></span> Sales (₹)
+                <span class="legend-dot units"></span> Units Sold
+              </div>
+            </div>
+            <div class="chart-wrapper">
+              <canvas id="chart-monthly-trend"></canvas>
+            </div>
+          </div>
+
+          <!-- Category Share Chart -->
+          <div class="glass-card">
+            <div class="card-header-flex">
+              <div>
+                <h3 class="card-title">Revenue by Category</h3>
+                <p class="card-desc">Contribution of each business vertical</p>
+              </div>
+            </div>
+            <div class="chart-wrapper donut-wrapper">
+              <canvas id="chart-category-share"></canvas>
+            </div>
+          </div>
+        </div>
+
+        <!-- Inventory Health & Priority Alerts Row -->
+        <div class="dashboard-grid-2" style="margin-top: 1.5rem;">
+          <!-- Inventory Health Breakdown -->
+          <div class="glass-card">
+            <div class="card-header-flex">
+              <div>
+                <h3 class="card-title">Portfolio Inventory Health</h3>
+                <p class="card-desc">Stock positions calculated against demand velocity and reorder thresholds</p>
+              </div>
+            </div>
+
+            <div class="health-summary-boxes">
+              <div class="health-box optimal">
+                <span class="health-num" id="health-optimal">0</span>
+                <span class="health-lbl">Optimal Stock</span>
+              </div>
+              <div class="health-box reorder">
+                <span class="health-num" id="health-reorder">0</span>
+                <span class="health-lbl">Reorder Soon</span>
+              </div>
+              <div class="health-box stockout">
+                <span class="health-num" id="health-stockout">0</span>
+                <span class="health-lbl">Critical Stockout</span>
+              </div>
+              <div class="health-box overstock">
+                <span class="health-num" id="health-overstock">0</span>
+                <span class="health-lbl">Excess Inventory</span>
+              </div>
+            </div>
+
+            <div class="health-progress-bar" id="health-progress-bar">
+              <div class="bar-seg seg-optimal" style="width: 50%;"></div>
+              <div class="bar-seg seg-reorder" style="width: 25%;"></div>
+              <div class="bar-seg seg-stockout" style="width: 15%;"></div>
+              <div class="bar-seg seg-overstock" style="width: 10%;"></div>
+            </div>
+            <div class="health-bar-legend">
+              <span><span class="legend-dot dot-optimal"></span> Optimal</span>
+              <span><span class="legend-dot dot-reorder"></span> Approaching ROP</span>
+              <span><span class="legend-dot dot-stockout"></span> Below ROP (Urgent)</span>
+              <span><span class="legend-dot dot-overstock"></span> Overstocked (&gt;12 wks)</span>
+            </div>
+          </div>
+
+          <!-- Priority Action Alerts -->
+          <div class="glass-card">
+            <div class="card-header-flex">
+              <div>
+                <h3 class="card-title">Immediate Replenishment Alerts</h3>
+                <p class="card-desc">Top urgent stockout risks requiring procurement action</p>
+              </div>
+              <a href="#alerts" class="view-all-link" id="link-view-all-alerts">View All Actions →</a>
+            </div>
+
+            <div class="priority-alerts-list" id="overview-alerts-list">
+              <div class="empty-state">Evaluating inventory status...</div>
+            </div>
+          </div>
+        </div>
+
+      </section>
+
+      <!-- ══════════════════════════════════════════════════════════ -->
+      <!-- TAB 2: DEMAND FORECASTING                                  -->
+      <!-- ══════════════════════════════════════════════════════════ -->
+      <section class="tab-pane" id="tab-forecast">
+        
+        <!-- Forecast Selection Bar -->
+        <div class="planning-toolbar">
+          <div class="toolbar-group">
+            <label for="fc-subcat-select" class="toolbar-label">Select Sub-Category:</label>
+            <select id="fc-subcat-select" class="toolbar-select"></select>
+          </div>
+
+          <div class="toolbar-group">
+            <span class="toolbar-label">Planning Horizon:</span>
+            <div class="horizon-pills">
+              <button class="pill" data-days="7" id="pill-7">7 Days (1 Week)</button>
+              <button class="pill active" data-days="14" id="pill-14">14 Days (2 Weeks)</button>
+              <button class="pill" data-days="30" id="pill-30">30 Days (4 Weeks)</button>
+            </div>
+          </div>
+
+          <button class="btn-primary" id="btn-run-forecast">Generate Forecast</button>
+        </div>
+
+        <!-- Forecast Summary KPI Cards -->
+        <div class="kpi-grid" style="grid-template-columns: repeat(4, 1fr); margin-top: 1.2rem;">
+          <div class="kpi-card">
+            <div class="kpi-icon-wrap vol">📈</div>
+            <div class="kpi-details">
+              <span class="kpi-label">Projected Demand</span>
+              <span class="kpi-value" id="fc-proj-qty">—</span>
+              <span class="kpi-subtext" id="fc-proj-qty-sub">Total units across horizon</span>
+            </div>
+          </div>
+
+          <div class="kpi-card">
+            <div class="kpi-icon-wrap rev">₹</div>
+            <div class="kpi-details">
+              <span class="kpi-label">Projected Revenue</span>
+              <span class="kpi-value" id="fc-proj-revenue">—</span>
+              <span class="kpi-subtext" id="fc-proj-revenue-sub">Expected sales value</span>
+            </div>
+          </div>
+
+          <div class="kpi-card">
+            <div class="kpi-icon-wrap aov">⏱️</div>
+            <div class="kpi-details">
+              <span class="kpi-label">Average Run-Rate</span>
+              <span class="kpi-value" id="fc-run-rate">—</span>
+              <span class="kpi-subtext">Trailing historical weekly average</span>
+            </div>
+          </div>
+
+          <div class="kpi-card">
+            <div class="kpi-icon-wrap skus">🎯</div>
+            <div class="kpi-details">
+              <span class="kpi-label">Uncertainty Band (80% CI)</span>
+              <span class="kpi-value" id="fc-ci-spread">—</span>
+              <span class="kpi-subtext">Confidence interval range</span>
+            </div>
+          </div>
+        </div>
+
+        <!-- Main Forecast Chart -->
+        <div class="glass-card" style="margin-top: 1.5rem;">
+          <div class="card-header-flex">
+            <div>
+              <h3 class="card-title" id="fc-chart-title">Demand Forecast vs Trailing History</h3>
+              <p class="card-desc">Historical sales volume paired with projected consumer demand and 80% confidence interval band</p>
+            </div>
+            <div class="chart-legend-custom">
+              <span class="legend-dot" style="background:#58a6ff;"></span> Trailing Demand
+              <span class="legend-dot" style="background:#3fb950; border-top: 2px dashed #3fb950;"></span> Forecast Projection
+              <span class="legend-dot" style="background:rgba(63, 185, 80, 0.25);"></span> 80% Confidence Band
+            </div>
+          </div>
+          <div class="chart-wrapper" style="height: 380px;">
+            <canvas id="chart-demand-forecast"></canvas>
+          </div>
+        </div>
+
+        <!-- Detailed Forecast Schedule Table -->
+        <div class="glass-card" style="margin-top: 1.5rem;">
+          <div class="card-header-flex">
+            <div>
+              <h3 class="card-title">Forecast Schedule & Variance Analysis</h3>
+              <p class="card-desc">Weekly projected demand breakdown with upper and lower tolerance limits</p>
+            </div>
+          </div>
+          <div class="table-container">
+            <table class="saas-table" id="forecast-schedule-table">
+              <thead>
+                <tr>
+                  <th>Forecast Week</th>
+                  <th>Expected Demand (Units)</th>
+                  <th>Lower Bound (80% CI)</th>
+                  <th>Upper Bound (80% CI)</th>
+                  <th>Est. Sales Value</th>
+                  <th>Replenishment Urgency</th>
+                </tr>
+              </thead>
+              <tbody id="forecast-schedule-tbody">
+                <tr><td colspan="6" class="table-loading">Select a product to view the forecast schedule.</td></tr>
+              </tbody>
+            </table>
+          </div>
+        </div>
+
+      </section>
+
+      <!-- ══════════════════════════════════════════════════════════ -->
+      <!-- TAB 3: INVENTORY OPTIMIZATION                              -->
+      <!-- ══════════════════════════════════════════════════════════ -->
+      <section class="tab-pane" id="tab-inventory">
+        
+        <div class="inventory-planning-grid">
+          
+          <!-- Left Column: Inputs & Assumptions Form -->
+          <div class="glass-card">
+            <div class="card-header-flex">
+              <div>
+                <h3 class="card-title">Operational Planning Parameters</h3>
+                <p class="card-desc">Configure warehouse parameters and service-level targets</p>
+              </div>
+            </div>
+
+            <div class="assumption-alert-box">
+              <span class="assumption-icon">💡</span>
+              <div class="assumption-text">
+                <strong>Planning Note:</strong> Stock levels, supplier lead times, and target service levels are operational planning parameters configured by your merchandising team.
+              </div>
+            </div>
+
+            <form id="inventory-form" class="inventory-form">
+              <div class="form-group">
+                <label for="inv-subcat-select" class="form-label">Sub-Category</label>
+                <select id="inv-subcat-select" class="form-select"></select>
+              </div>
+
+              <div class="form-row-2">
+                <div class="form-group">
+                  <label for="inv-current-stock" class="form-label">Current Stock on Hand</label>
+                  <input type="number" id="inv-current-stock" class="form-input" min="0" value="25" />
+                  <span class="form-hint">Physical inventory in warehouse</span>
+                </div>
+                <div class="form-group">
+                  <label for="inv-in-transit" class="form-label">Outstanding In-Transit</label>
+                  <input type="number" id="inv-in-transit" class="form-input" min="0" value="0" />
+                  <span class="form-hint">Units already on purchase order</span>
+                </div>
+              </div>
+
+              <div class="form-row-2">
+                <div class="form-group">
+                  <label for="inv-lead-time" class="form-label">Supplier Lead Time (Days)</label>
+                  <input type="number" id="inv-lead-time" class="form-input" min="1" max="90" value="7" />
+                  <span class="form-hint">Transit duration to dock receipt</span>
+                </div>
+                <div class="form-group">
+                  <label for="inv-order-cost" class="form-label">Order Placement Cost (₹)</label>
+                  <input type="number" id="inv-order-cost" class="form-input" min="0" value="100" />
+                  <span class="form-hint">PO processing and handling expense</span>
+                </div>
+              </div>
+
+              <div class="form-row-2">
+                <div class="form-group">
+                  <label for="inv-min-order-qty" class="form-label">Minimum Order Qty (MOQ)</label>
+                  <input type="number" id="inv-min-order-qty" class="form-input" min="0" value="0" />
+                  <span class="form-hint">Supplier minimum batch constraint</span>
+                </div>
+                <div class="form-group">
+                  <label for="inv-case-pack" class="form-label">Case Pack / Lot Multiple</label>
+                  <input type="number" id="inv-case-pack" class="form-input" min="1" value="1" />
+                  <span class="form-hint">Packaging shipment multiple</span>
+                </div>
+              </div>
+
+              <div class="form-group">
+                <div class="slider-header">
+                  <label for="inv-service-level" class="form-label">Target Service Level (In-Stock Probability)</label>
+                  <span class="slider-val-badge" id="inv-service-level-badge">95.0%</span>
+                </div>
+                <input type="range" id="inv-service-level" class="form-slider" min="0.80" max="0.995" step="0.005" value="0.95" />
+                <div class="slider-ticks">
+                  <span>80%</span>
+                  <span>90%</span>
+                  <span>95% (Standard)</span>
+                  <span>99% (High)</span>
+                </div>
+              </div>
+
+              <button type="button" class="btn-primary full-width" id="btn-calc-inventory">
+                Calculate Replenishment Policy
+              </button>
+            </form>
+          </div>
+
+          <!-- Right Column: Outputs & Recommendations -->
+          <div class="glass-card">
+            <div class="card-header-flex">
+              <div>
+                <h3 class="card-title">Replenishment Policy & Stock Analysis</h3>
+                <p class="card-desc">Optimized safety stock, reorder trigger, and purchase order size</p>
+              </div>
+            </div>
+
+            <!-- Health Status Banner -->
+            <div class="inventory-status-banner" id="inv-status-banner">
+              <span class="banner-icon" id="banner-icon">🟢</span>
+              <div class="banner-text">
+                <h4 id="banner-status-title">Evaluating Stock Position...</h4>
+                <p id="banner-status-desc">Calculating lead-time demand and reorder parameters.</p>
+              </div>
+            </div>
+
+            <!-- Optimization Outputs KPI Grid -->
+            <div class="inv-kpi-grid">
+              <div class="inv-kpi-card">
+                <span class="inv-kpi-lbl">Safety Stock (SS)</span>
+                <span class="inv-kpi-val" id="res-safety-stock">—</span>
+                <span class="inv-kpi-sub">Buffer for demand surges</span>
+              </div>
+              <div class="inv-kpi-card">
+                <span class="inv-kpi-lbl">Reorder Point (ROP)</span>
+                <span class="inv-kpi-val" id="res-reorder-point">—</span>
+                <span class="inv-kpi-sub">Trigger order when stock &le; ROP</span>
+              </div>
+              <div class="inv-kpi-card">
+                <span class="inv-kpi-lbl">Recommended Order (EOQ)</span>
+                <span class="inv-kpi-val" id="res-eoq">—</span>
+                <span class="inv-kpi-sub">Cost-minimizing batch quantity</span>
+              </div>
+              <div class="inv-kpi-card">
+                <span class="inv-kpi-lbl">Stock Coverage</span>
+                <span class="inv-kpi-val" id="res-coverage">—</span>
+                <span class="inv-kpi-sub">Estimated weeks of inventory</span>
+              </div>
+            </div>
+
+            <!-- Actionable Procurement Breakdown -->
+            <div class="recommendation-box" style="margin-top: 1.2rem;">
+              <h4 class="rec-title">Operational Procurement Guidance</h4>
+              <p class="rec-summary" id="res-action-summary">Loading inventory policy guidance...</p>
+              
+              <div class="procurement-metrics-row">
+                <div class="p-metric">
+                  <span class="p-lbl">Expected Lead-Time Demand:</span>
+                  <span class="p-val" id="res-ltd">—</span>
+                </div>
+                <div class="p-metric">
+                  <span class="p-lbl">Estimated PO Value:</span>
+                  <span class="p-val" id="res-est-po-cost">—</span>
+                </div>
+                <div class="p-metric">
+                  <span class="p-lbl">Current Stock vs ROP Gap:</span>
+                  <span class="p-val" id="res-stock-gap">—</span>
+                </div>
+              </div>
+            </div>
+
+            <!-- Explanatory Accordion -->
+            <div class="policy-explanation-box">
+              <h5 class="expl-heading">Decision Logic & Principles:</h5>
+              <ul class="expl-list">
+                <li><strong>Reorder Point (ROP = Lead-Time Demand + Safety Stock):</strong> Automatically protects your supply line during transit windows.</li>
+                <li><strong>Safety Stock:</strong> Dynamically computed based on historical weekly sales volatility (&sigma;) and chosen service level.</li>
+                <li><strong>Economic Order Quantity (EOQ):</strong> Balances purchase ordering administrative costs against inventory holding capital.</li>
+              </ul>
+            </div>
+          </div>
+
+        </div>
+
+      </section>
+
+      <!-- ══════════════════════════════════════════════════════════ -->
+      <!-- TAB 4: SALES ANALYSIS                                      -->
+      <!-- ══════════════════════════════════════════════════════════ -->
+      <section class="tab-pane" id="tab-sales">
+        
+        <!-- Category Sales Comparison -->
+        <div class="glass-card">
+          <div class="card-header-flex">
+            <div>
+              <h3 class="card-title">Category Revenue & Ticket Size Comparison</h3>
+              <p class="card-desc">Gross sales, transaction count, and average order value across categories</p>
+            </div>
+          </div>
+          <div class="chart-wrapper" style="height: 320px;">
+            <canvas id="chart-sales-by-category"></canvas>
+          </div>
+        </div>
+
+        <div class="dashboard-grid-2" style="margin-top: 1.5rem;">
+          <!-- Regional Demand Breakdown -->
+          <div class="glass-card">
+            <div class="card-header-flex">
+              <div>
+                <h3 class="card-title">Regional Revenue Breakdown</h3>
+                <p class="card-desc">Distribution across North, South, East, and West India</p>
+              </div>
+            </div>
+            <div class="chart-wrapper">
+              <canvas id="chart-sales-by-region"></canvas>
+            </div>
+          </div>
+
+          <!-- Customer Segment Analysis -->
+          <div class="glass-card">
+            <div class="card-header-flex">
+              <div>
+                <h3 class="card-title">Customer Segment Performance</h3>
+                <p class="card-desc">Consumer vs Corporate vs Home Office sales volume</p>
+              </div>
+            </div>
+            <div class="chart-wrapper">
+              <canvas id="chart-sales-by-segment"></canvas>
+            </div>
+          </div>
+        </div>
+
+        <!-- Top Selling Products Table -->
+        <div class="glass-card" style="margin-top: 1.5rem;">
+          <div class="card-header-flex">
+            <div>
+              <h3 class="card-title">Top 10 Best-Selling Products by Revenue</h3>
+              <p class="card-desc">Leading retail SKUs driving business volume</p>
+            </div>
+          </div>
+          <div class="table-container">
+            <table class="saas-table" id="top-products-table">
+              <thead>
+                <tr>
+                  <th>Rank</th>
+                  <th>Product Name</th>
+                  <th>Category</th>
+                  <th>Units Sold</th>
+                  <th>Total Sales (₹)</th>
+                  <th>Revenue Share</th>
+                </tr>
+              </thead>
+              <tbody id="top-products-tbody">
+                <tr><td colspan="6" class="table-loading">Loading top products...</td></tr>
+              </tbody>
+            </table>
+          </div>
+        </div>
+
+      </section>
+
+      <!-- ══════════════════════════════════════════════════════════ -->
+      <!-- TAB 5: PRODUCTS CATALOG                                    -->
+      <!-- ══════════════════════════════════════════════════════════ -->
+      <section class="tab-pane" id="tab-products">
+        
+        <!-- Filter Controls -->
+        <div class="catalog-toolbar">
+          <div class="search-input-wrap">
+            <span class="search-icon">🔍</span>
+            <input type="text" id="catalog-search" class="search-input" placeholder="Search by product name, category, or sub-category..." />
+          </div>
+
+          <div class="filter-controls-right">
+            <select id="catalog-cat-filter" class="toolbar-select">
+              <option value="All">All Categories</option>
+            </select>
+
+            <select id="catalog-sort" class="toolbar-select">
+              <option value="sales-desc">Sort by: Revenue (High to Low)</option>
+              <option value="qty-desc">Sort by: Units Sold (High to Low)</option>
+              <option value="price-desc">Sort by: Price (High to Low)</option>
+              <option value="returns-asc">Sort by: Lowest Return Rate</option>
+            </select>
+          </div>
+        </div>
+
+        <!-- Catalog Table -->
+        <div class="glass-card" style="margin-top: 1.2rem;">
+          <div class="card-header-flex">
+            <div>
+              <h3 class="card-title">Retail Product Catalog</h3>
+              <p class="card-desc" id="catalog-count-label">Showing 74 active products in retail inventory</p>
+            </div>
+          </div>
+          <div class="table-container">
+            <table class="saas-table" id="catalog-table">
+              <thead>
+                <tr>
+                  <th>Product Name</th>
+                  <th>Category</th>
+                  <th>Sub-Category</th>
+                  <th>Unit Price (₹)</th>
+                  <th>Units Sold</th>
+                  <th>Gross Revenue (₹)</th>
+                  <th>Orders</th>
+                  <th>Return Rate</th>
+                  <th>Action</th>
+                </tr>
+              </thead>
+              <tbody id="catalog-tbody">
+                <tr><td colspan="9" class="table-loading">Loading product catalog...</td></tr>
+              </tbody>
+            </table>
+          </div>
+        </div>
+
+      </section>
+
+      <!-- ══════════════════════════════════════════════════════════ -->
+      <!-- TAB 6: ALERTS & RECOMMENDATIONS                            -->
+      <!-- ══════════════════════════════════════════════════════════ -->
+      <section class="tab-pane" id="tab-alerts">
+        
+        <div class="alerts-filter-bar">
+          <div class="alerts-filter-tabs">
+            <button class="alert-filter-btn active" data-filter="ALL">All Items (20)</button>
+            <button class="alert-filter-btn filter-critical" data-filter="HIGH">Critical Stockouts</button>
+            <button class="alert-filter-btn filter-warning" data-filter="MEDIUM">Approaching ROP</button>
+            <button class="alert-filter-btn filter-excess" data-filter="LOW">Excess Stock</button>
+            <button class="alert-filter-btn filter-normal" data-filter="NORMAL">Optimal Position</button>
+          </div>
+        </div>
+
+        <div class="alerts-container-grid" id="full-alerts-list" style="margin-top: 1.2rem;">
+          <div class="empty-state">Loading portfolio alerts and actionable recommendations...</div>
+        </div>
+
+      </section>
+
+    </div>
+  </main>
+
+  <!-- App Main Scripts -->
+  <script src="/static/app.js"></script>
+</body>
+</html>

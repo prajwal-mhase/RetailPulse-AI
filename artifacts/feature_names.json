@@ -1,0 +1,1 @@
+["subcat_id", "year", "month", "week_of_year", "quarter", "is_q4", "lag_1w", "lag_2w", "lag_3w", "lag_4w", "lag_8w", "lag_13w", "lag_26w", "roll_mean_4w", "roll_mean_8w", "roll_mean_13w", "roll_mean_26w", "roll_std_4w", "roll_std_8w", "roll_std_13w", "roll_std_26w"]

@@ -1,0 +1,29 @@
+version: '3.8'
+
+services:
+  retailpulse-platform:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: retailpulse_app
+    ports:
+      - "8000:8000"
+    environment:
+      - DATA_PATH=india_retail_sales_dataset.csv
+      - ARTIFACTS_DIR=artifacts
+      - API_HOST=0.0.0.0
+      - API_PORT=8000
+      - CORS_ORIGINS=*
+      - LOG_LEVEL=INFO
+    volumes:
+      # Persistent model artifacts directory
+      - ./artifacts:/app/artifacts
+      # Read-only mount for the verified dataset
+      - ./india_retail_sales_dataset.csv:/app/india_retail_sales_dataset.csv:ro
+    restart: unless-stopped
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:8000/api/health"]
+      interval: 30s
+      timeout: 5s
+      retries: 3
+      start_period: 10s
