@@ -1,183 +1,395 @@
-# RetailPulse AI — Demand Forecasting & Inventory Optimization Platform
 
-A production-ready, enterprise-grade retail demand planning and inventory optimization platform built on `india_retail_sales_dataset.csv` (India Retail, 2023–2026).
+# RetailPulse AI — Demand Forecasting & Inventory Optimization
+
+An AI-powered retail analytics platform that combines machine learning, demand forecasting, inventory optimization, and interactive visualizations to support data-driven retail decisions.
 
 ---
 
-## 1. System Architecture
+## Table of Contents
 
+- [Overview](#overview)
+- [Key Features](#key-features)
+- [Technology Stack](#technology-stack)
+- [System Architecture](#system-architecture)
+- [Dataset](#dataset)
+- [Machine Learning Models](#machine-learning-models)
+- [Model Evaluation](#model-evaluation)
+- [Inventory Optimization](#inventory-optimization)
+- [Explainable AI](#explainable-ai)
+- [Getting Started](#getting-started)
+- [Running the Application](#running-the-application)
+- [Testing](#testing)
+- [API Documentation](#api-documentation)
+- [Project Structure](#project-structure)
+
+---
+
+## Overview
+
+RetailPulse AI is a machine learning-based decision-support platform designed to help retailers analyze historical sales, forecast future demand, and make informed inventory planning decisions.
+
+Retail businesses often face challenges such as unpredictable demand, excess inventory, stockouts, and inefficient replenishment planning. RetailPulse AI addresses these challenges by combining historical sales analytics, predictive modeling, inventory calculations, and interactive dashboards in one application.
+
+The platform processes retail sales data, generates forecasts at the weekly product sub-category level, and uses configurable inventory parameters to support replenishment decisions.
+
+### Project Objectives
+
+- Analyze historical retail sales and demand patterns.
+- Develop and compare machine learning forecasting models.
+- Generate future demand estimates.
+- Support inventory planning and replenishment decisions.
+- Visualize sales trends and forecasting results.
+- Improve model transparency through explainable AI.
+- Expose application functionality through a REST API.
+
+---
+
+## Key Features
+
+### Demand Forecasting
+
+- Forecast future demand from historical sales data.
+- Compare machine learning models with baseline forecasting approaches.
+- Support configurable forecasting horizons.
+- Visualize historical and predicted demand.
+- Analyze demand patterns across product sub-categories.
+
+### Inventory Optimization
+
+- Estimate reorder points and safety stock.
+- Calculate suggested replenishment quantities.
+- Support configurable supplier lead times and service levels.
+- Account for minimum order quantities and case-pack constraints.
+- Estimate economic order quantities using configurable cost assumptions.
+
+### Sales Analytics
+
+- Analyze historical retail sales performance.
+- Explore demand trends over time.
+- Compare product and sub-category performance.
+- Present insights using interactive charts and visualizations.
+
+### Product Catalog
+
+- Browse product information and categories.
+- Organize product data for analytical workflows.
+- Connect product information with sales and forecasting views.
+
+### Inventory Alerts
+
+- Highlight inventory conditions requiring attention.
+- Support replenishment planning.
+- Identify potential inventory risks based on configured parameters.
+
+### Explainable AI
+
+- Use SHAP-based analysis to investigate feature contributions.
+- Help users understand which input features influence model predictions.
+- Support interpretation of forecasting behavior.
+
+### REST API
+
+- Provide backend functionality through FastAPI.
+- Validate supported inputs using Pydantic.
+- Generate interactive API documentation.
+- Connect the backend with the web dashboard.
+
+---
+
+## Technology Stack
+
+| Component | Technologies |
+|---|---|
+| Programming Language | Python |
+| Data Processing | Pandas, NumPy |
+| Machine Learning | Scikit-learn, XGBoost |
+| Explainable AI | SHAP |
+| Backend Framework | FastAPI |
+| ASGI Server | Uvicorn |
+| Frontend | HTML5, CSS3, JavaScript |
+| Data Visualization | Chart.js |
+| API Validation | Pydantic |
+| Data Interoperability | PyArrow |
+| Testing | Pytest |
+| Version Control | Git, GitHub |
+
+---
+
+## System Architecture
+
+```mermaid
+flowchart TD
+    A[Retail Sales Dataset] --> B[Data Cleaning and Validation]
+    B --> C[Feature Engineering]
+    C --> D[Historical Sales Analysis]
+    C --> E[Forecasting Models]
+    E --> F[Model Evaluation]
+    F --> G[Demand Predictions]
+    G --> H[Inventory Optimization]
+    E --> I[SHAP Explainability]
+    D --> J[FastAPI Backend]
+    G --> J
+    H --> J
+    I --> J
+    J --> K[Interactive Web Dashboard]
+    K --> L[Retail Decision Support]
 ```
-D:\DSP\
-├── india_retail_sales_dataset.csv  # Verified retail sales transactions (10,009 rows)
-├── config.py                       # Central configuration, horizons, paths & defaults
-├── data_pipeline.py                # Schema validation, currency cleaning, weekly aggregation & features
-├── eda.py                          # Exploratory data analysis, distributions & audit report
-├── eda_output/                     # Diagnostic charts & full analysis text report
-├── forecasting.py                  # Models (Naïve, Seasonal Naïve, Moving Avg, Ridge, RF, XGBoost)
-├── inventory.py                    # Safety Stock, Reorder Point, EOQ, MOQ, Case-Pack & Risk Engine
-├── explainability.py               # SHAP feature importance & attributions (TreeExplainer)
-├── train.py                        # Model training and artifact serialization entry point
-├── api.py                          # FastAPI REST API + static host with path-traversal protection
-├── frontend/                       # Modern SaaS Business Application (Vanilla JS & CSS)
-│   ├── index.html                  # Executive Single-Page Application Shell
-│   ├── style.css                   # Enterprise dark-theme glassmorphism design system
-│   └── app.js                      # Business workflow controller & Chart.js engine
-├── tests/                          # Automated test suite (66 passing tests)
-│   ├── test_pipeline.py            # Data pipeline unit tests
-│   ├── test_forecasting.py         # Inventory formula & evaluation metric unit tests
-│   └── test_api.py                 # FastAPI integration & contract tests
-├── artifacts/                      # Serialized model, subcategory mappings, metrics
-│   ├── xgb_model.pkl               # Trained XGBoost regressor
-│   ├── cat_map.json                # Categorical integer encoding map (20 sub-categories)
-│   ├── feature_names.json          # Input feature vector specifications
-│   └── metrics.json                # Test set evaluation metrics (MAE, RMSE, WAPE, Bias)
-├── Dockerfile                      # Production container spec (Python 3.12-slim, non-root)
-├── docker-compose.yml              # Multi-container/volume composition
-├── .dockerignore                   # Context exclusion rules
-├── requirements.txt                # Pinned dependencies
-├── .env / .env.example             # Environment variables
-└── pytest.ini                      # Pytest test execution configuration
+
+### Workflow
+
+1. Load the retail sales dataset.
+2. Validate and clean the data.
+3. Process dates and prepare historical demand observations.
+4. Aggregate data into weekly product sub-category time series.
+5. Generate features for forecasting.
+6. Train and evaluate candidate forecasting models.
+7. Generate demand predictions.
+8. Apply inventory planning calculations using forecasts and configuration inputs.
+9. Serve results through the API and web dashboard.
+
+---
+
+## Dataset
+
+The project uses the following dataset:
+
+`india_retail_sales_dataset.csv`
+
+The project documentation reports the following dataset characteristics. Verify these values against the actual dataset and preprocessing pipeline before using them as final research results.
+
+| Attribute | Reported Value |
+|---|---:|
+| Raw rows | 10,009 |
+| Raw columns | 24 |
+| Rows after duplicate removal | 9,994 |
+| Duplicate Order IDs removed | 15 |
+| Reported date range | January 1, 2023 – December 31, 2025 |
+| Product sub-categories | 20 |
+| Distinct product names | 74 |
+| Weekly time-series rows | 3,160 |
+
+### Data Preprocessing
+
+The documented workflow includes:
+
+- Data cleaning and validation.
+- Duplicate identification and removal.
+- Date parsing and time-based aggregation.
+- Weekly demand-series construction.
+- Feature engineering for forecasting.
+- Chronological separation of training, validation, and test datasets.
+
+### Forecasting Granularity
+
+The documented forecasting dataset contains 20 product sub-categories across 158 weekly periods.
+
+Therefore, the forecasting model operates at the **weekly product sub-category level**, rather than independently forecasting demand for every individual SKU.
+
+---
+
+## Machine Learning Models
+
+RetailPulse AI evaluates multiple forecasting approaches to compare predictive performance.
+
+| Model | Description |
+|---|---|
+| Naive Forecast | Uses a recent observed value as a baseline |
+| Seasonal Naive | Uses a previous seasonal observation |
+| Moving Average | Smooths historical demand fluctuations |
+| Ridge Regression | Applies regularized linear regression |
+| Random Forest | Uses an ensemble of decision trees |
+| XGBoost | Uses gradient-boosted decision trees |
+
+---
+
+## Model Evaluation
+
+The following results are reported in the project documentation and have not been independently verified in this README.
+
+### Validation Results
+
+| Model | MAE |
+|---|---:|
+| XGBoost | 3.1816 |
+| Random Forest | 3.2242 |
+| Ridge Regression | 3.2311 |
+
+### Test Results
+
+| Model | MAE | RMSE | WAPE |
+|---|---:|---:|---:|
+| Ridge Regression | 3.1943 | 3.8320 | 55.49% |
+| XGBoost | 3.3267 | 3.9726 | 57.79% |
+| Random Forest | 3.3594 | Not reported | 58.36% |
+
+### Evaluation Metrics
+
+**Mean Absolute Error (MAE)**
+
+Measures the average absolute difference between actual and predicted demand.
+
+**Root Mean Squared Error (RMSE)**
+
+Measures prediction error while penalizing larger errors more heavily.
+
+**Weighted Absolute Percentage Error (WAPE)**
+
+Measures total absolute prediction error relative to total actual demand.
+
+**Forecast Bias**
+
+Measures whether predictions systematically overestimate or underestimate actual demand.
+
+---
+
+## Inventory Optimization
+
+RetailPulse AI combines forecast demand with configurable operational parameters to support inventory planning.
+
+### Reorder Point
+
+A basic reorder point can be calculated as:
+
+```text
+Reorder Point = Expected Demand During Lead Time + Safety Stock
 ```
 
+### Safety Stock
+
+A simplified statistical formulation is:
+
+```text
+Safety Stock = Z × Demand Standard Deviation × √Lead Time
+```
+
+Where:
+
+- `Z` represents the service-level factor.
+- `Demand Standard Deviation` represents demand variability per time period.
+- `Lead Time` is expressed in the same time units used for the demand variability estimate.
+
+This simplified formulation assumes a consistent lead time and an appropriate estimate of demand variability.
+
+### Economic Order Quantity
+
+The standard EOQ formula is:
+
+```text
+EOQ = √((2 × Annual Demand × Ordering Cost) / Annual Holding Cost per Unit)
+```
+
+### Inventory Parameters
+
+Inventory calculations may use:
+
+- Current stock.
+- Forecast demand.
+- Supplier lead time.
+- Target service level.
+- Minimum order quantity.
+- Case-pack quantity.
+- Ordering cost.
+- Holding cost.
+
 ---
 
-## 2. Executive Business Navigation
-
-The application provides a clean SaaS dashboard with 6 dedicated business modules:
-
-1. **Executive Overview:** High-level KPIs (Gross Revenue ₹151.0M, 25.5K Units Sold, ₹6,041 Average Order Value, 74 Active SKUs, 2.9% Return Rate), monthly demand trends, category revenue share, portfolio inventory health, and immediate replenishment alerts.
-2. **Demand Forecasting:** Sub-category demand forecasting with 7, 14, and 30-day horizons, interactive dual-axis chart, 80% bootstrap confidence tolerance bands, and weekly variance tables.
-3. **Inventory Optimization:** Interactive replenishment workspace. Input on-hand inventory, in-transit units, lead times, target service levels (80%–99.5%), ordering costs, minimum order quantities (MOQ), and case packs to calculate Safety Stock, Reorder Point (ROP), and Economic Order Quantity (EOQ).
-4. **Sales Analysis:** Multidimensional business intelligence covering Category revenue/AOV, Regional breakdown (North, South, East, West), Customer Segments (Consumer, Corporate, Home Office), Payment methods, and Top 10 Best-Selling SKUs.
-5. **Products Catalog:** Comprehensive searchable catalog of 74 retail products with category filters, sorting (by revenue, volume, price, return rate), and direct "Forecast & Plan" shortcuts.
-6. **Alerts & Recommendations:** Actionable procurement exception manager classifying portfolio items into Critical Stockout Hazards, Reorder Imminent, Excess Stock, and Optimal Position with clear purchase order directives.
-
----
-
-## 3. Quick Start & Local Execution
+## Getting Started
 
 ### Prerequisites
-- Python 3.10+ (tested on Python 3.12)
-- Git
 
-### Clean Installation
+Install the following:
+
+- Python 3.12, recommended for this project environment.
+- pip.
+- Git.
+- PowerShell, Command Prompt, or another terminal.
+
+### 1. Clone the Repository
+
+```bash
+git clone https://github.com/prajwal-mhase/RetailPulse-AI
+cd RetailPulse-AI
+```
+
+### 2. Create a Virtual Environment
+
+**Windows PowerShell**
+
 ```powershell
-# 1. Clone or navigate to the repository
-cd D:\DSP
-
-# 2. Install dependencies
-py -m pip install -r requirements.txt
-
-# 3. Run EDA & Distribution Analysis (generates eda_output/ charts & report)
-py eda.py
-
-# 4. Train models on replacement dataset (saves artifacts to artifacts/)
-py train.py
-
-# 5. Run the automated test suite (66 passing tests)
-py -m pytest -v
-
-# 6. Start the application (API + Web Dashboard)
-py api.py
-
-# Open http://localhost:8000 in your browser
+python -m venv .venv
+.\.venv\Scripts\Activate.ps1
 ```
 
----
-
-## 4. Production Deployment & Containerization
-
-### Docker Deployment
-The application includes a production-ready `Dockerfile` featuring a minimal `python:3.12-slim` image, non-root application execution (`appuser`), and container-level health checking.
+**macOS / Linux**
 
 ```bash
-# Build the Docker image
-docker build -t retailpulse-app:latest .
-
-# Run the containerized service
-docker run -d \
-  --name retailpulse \
-  -p 8000:8000 \
-  -v $(pwd)/artifacts:/app/artifacts \
-  retailpulse-app:latest
+python3 -m venv .venv
+source .venv/bin/activate
 ```
 
-### Docker Compose
-For unified local or production orchestration:
+### 3. Install Dependencies
+
+Run the following command from the project root:
 
 ```bash
-# Start the service in the background
-docker compose up -d
+python -m pip install --upgrade pip
+python -m pip install -r requirements.txt
+```
 
-# View real-time application logs
-docker compose logs -f
+The `requirements.txt` file contains the project's Python dependency specifications.
 
-# Verify container health status
-docker compose ps
+### 4. Verify Dependencies
 
-# Stop the service
-docker compose down
+---
+
+## Running the Application
+
+### Start the FastAPI Server
+
+From the project root, with the virtual environment activated, run:
+
+```bash
+python -m uvicorn api:app --host 127.0.0.1 --port 8000
+```
+
+After the server starts successfully, open the following URLs.
+
+| Resource | URL |
+|---|---|
+| Main Dashboard | http://127.0.0.1:8000/ |
+| Interactive API Documentation | http://127.0.0.1:8000/docs |
+| Alternative API Documentation | http://127.0.0.1:8000/redoc |
+
+To stop the server, press `Ctrl + C`.
+
+---
+
+## Project Structure
+
+The following is an illustrative structure. Directory names and file locations may differ in the actual repository.
+
+```text
+RetailPulse-AI/
+├── api.py
+├── requirements.txt
+├── india_retail_sales_dataset.csv
+├── README.md
+├── .gitignore
+├── frontend/
+│   ├── HTML files
+│   ├── CSS files
+│   └── JavaScript files
+├── models/
+├── data/
+└── configuration/
 ```
 
 ---
 
-## 5. API Reference & Contract
+## Project Summary
 
-Interactive OpenAPI documentation is available at `/docs` or `/redoc` when running.
+RetailPulse AI demonstrates an end-to-end approach to retail demand forecasting and inventory decision support by integrating data processing, machine learning, model explainability, inventory calculations, REST APIs, and interactive visualizations.
 
-| Method | Endpoint | Description | Auth / Role |
-|---|---|---|---|
-| `GET` | `/api/health` | Service health & model readiness status | Public |
-| `GET` | `/api/metadata` | Dataset summary and training metrics | Public |
-| `GET` | `/api/products` | Sub-category inventory performance summaries | Public |
-| `GET` | `/api/catalog` | 74 named products with velocity & sales metrics | Public |
-| `GET` | `/api/overview` | Executive KPI aggregation & revenue breakdowns | Public |
-| `GET` | `/api/sales-analysis` | Regional, Segment, and Payment distribution | Public |
-| `GET` | `/api/alerts` | Portfolio stockout & overstock replenishment alerts | Public |
-| `GET` | `/api/history/{sub_category}` | Weekly historical demand timeseries | Public |
-| `POST` | `/api/forecast` | Multi-horizon ML demand forecast with bounds | Public |
-| `POST` | `/api/inventory` | Safety stock, ROP, EOQ, MOQ, & Case Pack policy | Public |
-| `GET` | `/api/shap/{sub_category}` | Top feature importances via SHAP TreeExplainer | Public |
+The platform aims to transform historical retail sales data into actionable insights while making model assumptions, evaluation results, and limitations transparent.
 
----
-
-## 6. Supply-Chain & Forecasting Methodology
-
-| Calculation | Formulation | Business Rationale |
-|---|---|---|
-| **Lead-Time Demand** | $\mu_{\text{weekly}} \times (\text{lead\_time} / 7)$ | Expected units consumed during the supplier transit window |
-| **Safety Stock (SS)** | $z(\text{SL}) \times \sigma_{\text{weekly}} \times \sqrt{\text{lead\_time} / 7}$ | Buffer absorbing demand volatility at configured service level |
-| **Reorder Point (ROP)** | $\text{LTD} + \text{SS}$ | Minimum inventory threshold that triggers a purchase requisition |
-| **Economic Order Quantity (EOQ)** | $\sqrt{\frac{2 \times D \times S}{H}}$ | Batch quantity minimizing annual ordering and holding costs |
-| **Recommended Order Qty** | $\lceil \max(\text{Net Shortage}, \text{MOQ}) / \text{Pack} \rceil \times \text{Pack}$ | Order size aligned with supplier constraints and packaging |
-| **Stock Coverage** | $\text{current\_stock} / \mu_{\text{weekly}}$ | Weeks of available supply on hand |
-| **Stockout Risk** | $\text{inventory\_position} \le \text{ROP}$ | Flagged when stock is inadequate to survive supplier lead time |
-| **Excess Risk** | $\text{coverage} > 12\text{ weeks}$ | Identifies non-productive working capital tied up in slow-moving stock |
-
----
-
-## 7. Dataset & Provenance Summary
-
-- **Dataset:** `india_retail_sales_dataset.csv` (10,009 raw records, 24 columns)
-- **Time Horizon:** Order Date 2023-01-01 → 2026-01-11 (158 consecutive weeks)
-- **Geography:** Nationwide India (North, South, East, West across 14 major states)
-- **Categories (5):** Electronics, Furniture, Clothing, Groceries, Office Supplies
-- **Sub-Categories (20):** Personal Care, Snacks, Home Appliances, Computer Peripherals, Staples, Televisions, Mobile Accessories, Beverages, Footwear, Men's Wear, Kids Wear, Women's Wear, Storage Units, Tables, Stationery, Paper Products, Chairs, Art Supplies, Binders, Bookcases
-- **Products:** 74 distinct named retail products (e.g., *43 inch Smart TV*, *Ergonomic Office Chair*, *Basmati Rice 5kg*, *Formal Trousers*, etc.)
-- **Operational Data Disclaimer:** Inventory parameters (on-hand stock, lead times, ordering costs, MOQ, case packs) are user-provided assumptions, preserving data integrity without fabricating historical warehouse records.
-
----
-
-## 8. Quality & Security Assurance
-
-- **Unit & Integration Tests:** 66 automated tests passing with 0 failures across data ingestion, lag generation, model metrics, inventory formulas, boundary cases, security, and FastAPI endpoints.
-- **Security Hardening:**
-  - Non-root container user (`appuser`).
-  - Path traversal protection on SPA file server (escapes rejected with 404).
-  - Explicit 404 routing for non-existent `/api/*` endpoints.
-  - Safe deserialization and artifact validation upon startup.
-  - No committed credentials or API secrets.
-- **Performance Optimization:**
-  - Single startup data load; zero request-time file re-reading or retraining.
-  - Pure vectorization in Pandas and NumPy.
-  - Fast response times (<25ms for API endpoints).
+**Built with Python, machine learning, FastAPI, and data visualization.**
